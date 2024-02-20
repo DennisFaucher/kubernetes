@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.32.0 (HEAD)
+  labels:
+    io.kompose.service: overseerr-nfs
+  name: overseerr-nfs
+spec:
+  ports:
+    - name: "5055"
+      port: 5055
+      targetPort: 5055
+  selector:
+    io.kompose.service: overseerr-nfs
