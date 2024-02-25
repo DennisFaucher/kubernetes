@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.32.0 (HEAD)
+  labels:
+    io.kompose.service: radarr
+  name: radarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: radarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.32.0 (HEAD)
+      labels:
+        io.kompose.network/radarr-default: "true"
+        io.kompose.service: radarr
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/New_york
+          image: lscr.io/linuxserver/radarr:latest
+          name: radarr
+          ports:
+            - containerPort: 7878
+              hostPort: 7878
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: config-volume
+            - mountPath: /plex
+              name: plex-volume
+      restartPolicy: Always
+      volumes:
+        - name: plex-volume
+          nfs:
+            server: 192.168.1.155
+            path: /volume1/Plex
+            readOnly: false
+        - name: config-volume
+          nfs:
+            server: 192.168.1.155
+            path: /volume1/k8s-radarr
+            readOnly: false
+
