@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: qbittorrent
+  name: qbittorrent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: qbittorrent
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: qbittorrent
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/New_York
+            - name: WEBUI_PORT
+              value: "9090"
+          image: linuxserver/qbittorrent:4.6.0
+          name: qbittorrent
+          ports:
+            - containerPort: 9090
+            - containerPort: 6881
+            - containerPort: 6881
+              protocol: UDP
+          volumeMounts:
+          - mountPath: /synologynas
+            name: synologynas-volume
+          - mountPath: /config
+            name: config-volume
+      restartPolicy: Always
+      volumes:
+        - name: synologynas-volume
+          nfs:
+            server: 192.168.1.155
+            path: /volume1/Plex
+            readOnly: false
+        - name: config-volume
+          nfs:
+            server: 192.168.1.155
+            path: /volume1/k8s-qbittorrent
+            readOnly: false
+status: {}
+
