@@ -38,10 +38,15 @@ spec:
               hostPort: 8989
               protocol: TCP
           volumeMounts:
+            - mountPath: /config
+              name: sonarr-config
             - mountPath: /plex
               name: plex-volume
       restartPolicy: Always
       volumes:
+        - name: sonarr-config
+          persistentVolumeClaim:
+            claimName: sonarr-pv-claim
         - name: plex-volume
           nfs:
             server: 192.168.1.155
