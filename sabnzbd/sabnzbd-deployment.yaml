@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.32.0 (HEAD)
+  labels:
+    io.kompose.service: sabnzbd
+  name: sabnzbd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: sabnzbd
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.32.0 (HEAD)
+      labels:
+        io.kompose.network/sabnzbd-default: "true"
+        io.kompose.service: sabnzbd
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/New_York
+          image: lscr.io/linuxserver/sabnzbd:latest
+          name: sabnzbd
+          ports:
+            - containerPort: 8080
+              hostPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: config-volume
+            - mountPath: /plex
+              name: plex-volume
+      restartPolicy: Always
+      volumes:
+        - name: plex-volume
+          nfs:
+            server: 192.168.1.155
+            path: /volume1/Plex
+            readOnly: false
+        - name: config-volume
+          nfs:
+            server: 192.168.1.155
+            path: /volume1/k8s-sabnzbd
+            readOnly: false
