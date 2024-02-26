@@ -38,8 +38,6 @@ spec:
               hostPort: 7878
               protocol: TCP
           volumeMounts:
-            - mountPath: /config
-              name: config-volume
             - mountPath: /plex
               name: plex-volume
       restartPolicy: Always
@@ -49,9 +47,3 @@ spec:
             server: 192.168.1.155
             path: /volume1/Plex
             readOnly: false
-        - name: config-volume
-          nfs:
-            server: 192.168.1.155
-            path: /volume1/k8s-radarr
-            readOnly: false
-
