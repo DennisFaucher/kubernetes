@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.32.0 (HEAD)
+  labels:
+    io.kompose.service: fileserver
+  name: fileserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: fileserver
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.32.0 (HEAD)
+      labels:
+        io.kompose.network/fileserver-default: "true"
+        io.kompose.service: fileserver
+    spec:
+      containers:
+        - env:
+            - name: BASEPATH
+              value: /
+            - name: BASIC_AUTH_ENABLED
+              value: "true"
+            - name: BASIC_AUTH_PASSWORD
+              value: faucher01
+            - name: BASIC_AUTH_REALM
+              value: admin
+            - name: BASIC_AUTH_USER
+              value: admin
+          image: peterberweiler/fileserver
+          name: fileserver
+          ports:
+            - containerPort: 80
+              hostPort: 80
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /public
+              name: fileserver-public
+      restartPolicy: Always
+      volumes:
+        - name: fileserver-public
+          nfs:
+            server: 192.168.1.155
+            path: /volume1/Plex
+            readOnly: false
