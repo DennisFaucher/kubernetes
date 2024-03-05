@@ -30,7 +30,7 @@ spec:
             - name: BASIC_AUTH_ENABLED
               value: "true"
             - name: BASIC_AUTH_PASSWORD
-              value: faucher01
+              value: super_secret_password
             - name: BASIC_AUTH_REALM
               value: admin
             - name: BASIC_AUTH_USER
